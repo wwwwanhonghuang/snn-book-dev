@@ -16,7 +16,7 @@ For any errors, feedback, or inquiries regarding the handbook, please reach out 
 
 **Email:** huang-wanhong@alumni.u-tokyo.ac.jp
 
-Or alternatively, post an issue on GitHub.
+Alternatively, posting an issue would also be appreciated.
 
 
 
