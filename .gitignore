@@ -8,6 +8,6 @@
 *.log
 *.ptc
 *.run.xml
-
+*.toc
 *.tmp
 *.log
