@@ -1,0 +1,183 @@
+
+%%\chapterimage{ima2} % Chapter heading image
+
+\chapter{Neuron Dynamics}\
+
+Spiking neural network's neuron model describe how the membrance potential of a neuron change over the time.
+In this chapter, we dive into the biological neuron's dynamics and exhibit several examples neuron models in the 
+spiking neural network. 
+
+% Beside classical neuron models such as 
+% \texttt{Hodgkin-Huxley (HH) model}, \texttt{Leaky integrate-and-fire model}, and \texttt{Zhikevich model},
+% we also describe some 
+
+\section{Biological Neuron}\index{Biological Neuron}
+
+
+\section{Neuron Model Abstract and Taxonomy}\index{Neuron Model Abstract and Taxonomy}
+In spiking neural network, Equation~\ref{eq:neuron-state-space-abstract-1} to
+Equation~\ref{eq:neuron-state-space-abstract-4} provide a highly abstract description for
+ modeling a biological neuron.
+In these equation, $\bold x_t$ is the state vector at time $t$, $\Delta x_t$ is the state variation at time 
+$t$, $\bold u_t$ is the input vector at time $t$, $V$ is the membrane potential of the neuron, 
+$\bold y_t$ is the neuron's output at time $t$, 
+and $V_{out}$ is the output voltage that will be sent to the synapses that depature from this neuron. 
+$(\bold x_{t})_{i}$ is the $i$-th element of the state vector.
+
+\begin{align}
+    \Delta \bold x_t = f(\bold x_t, \bold u_t) \label{eq:neuron-state-space-abstract-1} \\
+    \bold y_t = g(\bold x_t, \bold u_t) \label{eq:neuron-state-space-abstract-2} \\
+    s.t.,\; (\exists i \in [0, |\bold x_t|])(\bold x_{t})_{i} = V \label{eq:neuron-state-space-abstract-3}\\
+            (\exists i \in [0, |\bold y|])_i\bold y = V_{out} \label{eq:neuron-state-space-abstract-4}
+\end{align}
+
+These equations are in the form of a \textbf{state-space model (SMM)}.
+
+
+Equation~\ref{eq:neuron-state-space-abstract-3} indicates that, a neuron should maintain a membrane potential $V$, 
+and Equation~\ref{eq:neuron-state-space-abstract-4} indicates that, the neuron's output should contains a 
+voltage $V_{out}$.
+
+\subsection{Current-based Neuron}\index{Current-based Neuron}
+In a current-based neuron model, the synaptic input is represented as an injected current directly 
+added to the membrane potential equation.
+we have the input $\bold u_t$ contains the current $I_t$, and $\bold x_t$ contains the membrance potential $V_t$.
+
+We will later to see that a current-based LIF neuron (Section~\ref{sec:current-based-lif}) can hold a form of 
+Equation~\ref{eq:current-based-lif-state-space}.
+
+
+\begin{equation}\label{eq:current-based-lif-state-space}
+    \dot V_t = \frac{1}{\tau_m}(-(V_t-V_{rest})+I_t) = f_{CurrentLIF_1}(V_t, \bold u_t = [I_t])
+\end{equation}
+
+
+
+\subsection{Conductance-based Neuron}\index{Conductance-based Neuron}
+In a conductance-based neuron model, the synaptic input is modeled by changing the conductance of the membrane, 
+which then affects the current flow.
+
+In the state space representation, the input $\bold u_t$ is the synapse conductance.
+let $\bold u_t=g_{syn}(t)$, $\bold x_t = V_t$, we will see that in conductance-based LIF neuron model, it 
+hold Equation~\ref{eq:condunce-based-lif-state-space}
+
+\begin{equation}\label{eq:condunce-based-lif-state-space}
+    \dot V_t = \frac{1}{\tau_m}(-(V_t-V_{rest})+g_syn(t)(E_{syn}-V_t)) = f_{ConductanceLIF_1}(V_t,  \bold u_t = g_{syn}(t))
+\end{equation}
+
+
+
+
+\section{Neuron Model Examples}\index{Neuron Model Examples}
+\subsection{Hodgkin-Huxley (HH) Model}\index{Hodgkin-Huxley (HH) Model}
+
+The Hodgkin-Huxley (HH) model is a conductance-based model , which can be utilize to accurately 
+reproduce the bio-neuron's dynamics. Its form is shown in Equation~\ref{eq:hh-model-1} to Equation~\ref{eq:hh-model-5}.
+Combine all these equations, we get Equation~\ref{eq:hh-model-6}.
+% \begin{align} 
+% \begin{split}
+% P(y=1/x)   &=P(y*>0/x)=P[x\beta+e>0/x]=P[e>-(\beta_{0}+x\beta)/x]\\
+% &=1-F[-(\beta_{0}+x\beta)]=F(\beta_{0}+x\beta)
+% \end{split}					
+% \end{align}
+
+\begin{align}
+    I = C_m\frac{dV_m}{dt} + I_{i} \label{eq:hh-model-1} \\
+    I_i = I_{Na} + I_K + I_l \label{eq:hh-model-2}  \\
+    I_{Na} = g_{Na}(V_m - V_{Na}) \label{eq:hh-model-3} \\
+    I_K = g_{K}(V_m - V_{K}) \label{eq:hh-model-4}  \\
+    I_l = \bar g_{l}(V_m - V_{l}) \label{eq:hh-model-5} 
+\end{align}
+
+\begin{equation}\label{eq:hh-model-6}
+    I_l = C_m\frac{dV_m}{dt} + g_{Na}(V_m - V_{Na}) + g_{K}(V_m - V_{K}) + \bar g_{l}(V_m - V_{l})
+\end{equation}
+
+Ion channel function $g_{\cdot}$ are function respect to time $t$ and membrance potential $V$.
+Specifically, Equation~\ref{eq:hh-model-7} is held.
+
+\begin{equation}\label{eq:hh-model-7}
+    g_{Na} = \bar g_{Na}m^3h \\
+    g_{K} = \bar g_{K}n^4 \\
+    g_{l} = \bar g_l \\
+\end{equation}
+
+Combine Equation~\ref{eq:hh-model-1} to Equation~\ref{eq:hh-model-7}, we get Equation~\ref{eq:hh-model-8}
+\begin{equation}\label{eq:hh-model-8}
+    I_l = C_m\frac{dV_m}{dt} + \bar g_{Na}m^3h(V_m - V_{Na}) + \bar g_{K}n^4(V_m - V_{K}) + \bar g_{l}(V_m - V_{l})
+\end{equation}
+
+$\frac{d\cdot}{dt}= \alpha_\cdot(V_m)(1-\cdot)-\beta_\cdot(V_m)\cdot $ is held. Where $\cdot$ is a placeholder for
+$m$, $n$ and $h$. As such, Equation~\ref{eq:hh-model-9} to Equation~\ref{eq:hh-model-11} are held.
+
+\begin{align}
+    \frac{dn}{dt}= \alpha_n(V_m)(1-n)-\beta_n(V_m)n \label{eq:hh-model-9}\\
+    \frac{dm}{dt}= \alpha_m(V_m)(1-m)-\beta_m(V_m)m \label{eq:hh-model-10}\\
+    \frac{dh}{dt}= \alpha_h(V_m)(1-h)-\beta_h(V_m)h \label{eq:hh-model-11}\\
+\end{align}
+
+From experiment, 
+we have Equation~\ref{eq:hh-model-12} to Equation~\ref{eq:hh-model-17}.
+
+\begin{align}
+    \alpha_n(V_m) = \frac{0.01(10-V)}{exp(\frac{10-V}{10}) - 1} \label{eq:hh-model-12}\\
+    \alpha_m(V_m) = \frac{0.1(25-V)}{exp(\frac{25-V}{10}) - 1} \label{eq:hh-model-13}\\
+    \alpha_h(V_m) = 0.07exp(-\frac{V}{20}) \label{eq:hh-model-14}\\
+    \beta_n(V_m) = 0.125exp(-\frac{V}{80}) \label{eq:hh-model-15}\\
+    \beta_m(V_m) = 4exp(-\frac{V}{18}) \label{eq:hh-model-16}\\
+    \beta_h(V_m) = \frac{1}{exp(\frac{30-V}{10})+1} \label{eq:hh-model-17}
+\end{align}
+
+Hodgkin-Huxley could be seen as a current-based neuron model, which may represent by space state model,
+with $\bold x_t = [V_t, m_t, h_t, n_t]$, and $\bold u_t = I_t$.
+
+\subsection{Leaky Integrate-and-fire Model}\index{Leaky Integrate-and-fire Model}
+\label{sec:current-based-lif}
+Leaky Integrate-and-fire model is a computational effective model, 
+in which a threshold is set, when membrance potential cross the threshold, 
+the neuro emit a spike. 
+In implementation, we may set the voltage output at time $t$, $V_{out}$ be $1\;mV$. 
+The scale problem has the potential to be solved by automatically adjusting the synapses' weights in trainning.
+A LIF neuron $i$'s output form a \textbf{spike train} $S_{i}(t) = \sum_{m}\delta(t-t_m)$.
+
+\begin{equation}\label{eq:lif}
+    \dot V_t = \frac{1}{\tau_m}(-(V_t-V_{rest})+g_syn(t)(E_{syn}-V_t))
+\end{equation}
+
+%% Learning neuron, synapse models and the spike trainning method.
+%% try on real dataset.
+
+\subsection{Izhikevich Model}\index{Izhikevich Model}
+
+% \subsection{Introducción}\index{Introducción}
+
+\subsection{FitzHugh-Nagumo Model}\index{FitzHugh-Nagumo Model}
+
+\subsection{Morris-Lecar Model}\index{Morris-Lecar Model}
+
+\subsection{Hindmarsh-Rose Model}\index{Hindmarsh-Rose Model}
+
+\subsection{Cable theory}\index{Cable theory}
+
+\subsection{Perfect Integrate-and-fire}\index{Perfect Integrate-and-fire}
+
+
+\subsection{Adaptive Integrate-and-fire}\index{Adaptive Integrate-and-fire}
+
+\subsection{Fring Rate Model}\index{Firing Rate Model}
+
+\subsection{Discussion}\index{Discussion (Neuron Dynamics)}
+
+\textbf{Spike Representation}
+You may note that, although different neuron models have different dynamics and spike 
+representations, they can still communicate with each other through synapses. Some neuron
+ models require current input, while others do not. Nonetheless, spikes can transmit 
+ over synapses and cause current variations across them by utilizing a common output element $V_{out}$. 
+ 
+ One challenge that may arise is the normalization of spike representations.
+To address this issue, one approach is to standardize the spike events by converting all
+ spike representations into binary form. Another approach can involve adjusting the synaptic weights.
+  Although we may face scaling issues with different types of spike representations, these
+   can be mitigated during training by appropriately adjusting the synapse weights.
+
+

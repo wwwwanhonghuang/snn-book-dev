@@ -1,0 +1,181 @@
+
+
+\chapter{Trainning Algorithms}
+
+
+
+\section{Unsupervior Learning}
+\subsection{Spike-timing-dependent plasticity (STDP)}
+% STDP can be devised from information maximizing principles (Bohte and Mozer, 2007; Toyoizumi et al., 2005).
+\subsection{Growing Spiking Neural Networks}
+\subsection{Artola, Bröcher, Singer (ABS) rule}
+\subsection{Bienenstock, Cooper, Munro (BCM) rule}
+\subsection{Relationship between BCM and STDP rules}
+
+\section{Supervised Learning}
+
+\subsection{STDP-based Methods}
+\subsubsection{Supervised STDP (SSTDP)}
+\subsubsection{Spike-Timing-Dependent Plasticity (STDP) with Supervision}
+
+\subsection{Spike-Timing Dependent Backpropagation (STDBP)}
+
+\subsection{Liquid State Machine (LSM) and Readout Training}
+
+\subsection{SpikeProp}
+
+
+
+\textbf{Extension}
+(McKennoch et al., 2006; Booij and tat Nguyen, 2005; Shrestha and Song, 2015; de Montigny and Mâsse, 2016; Banerjee, 2016; Shrestha and Song, 2017).
+
+spike timing based methods is that they cannot learn starting from a quiescent state of no spiking.
+Bohte (2011)
+
+Huh and Sejnowski (2017)
+
+\subsection{ReSuMe}
+\textbf{Related Work}
+(Sporea and Grüning, 2013)
+Pfister et al. (2006)
+Gardner et al. (2015)
+Fremaux et al. (2010)
+
+
+\subsection{SuperSpike}
+SuperSpike~\cite{super-spike} is a supervised learning algorithm dedicated to deterministic
+ Leaky Intergrate-and-Fire neuron model. While the backpropagation algorithm used in 
+ traditional neural network cannot directly be used in the training of spiking neural network,
+ the author provide a surrogate gradient-based method to tackling with the problems facing
+ in solving the $S_i/\partial w_{ij}$, where $S_i$ is the $i$-th neuron's spike train, and 
+ $w_{ij}$ is the connection weight from neuron $j$ to neuron $i$.
+
+ Specifically, $S_i(t) = \sum_{k} \delta(t - t_k)$, where $t_k$ is the $k$-th spike emission time,
+ and $\delta(\cdot)$ is the dirac delta function.
+
+
+\textbf{Approaches}
+approximate the partial derivative of the hidden unit output by $f(S_{pre},  g(V_{post}))$.
+
+Let $\hat S_i$ be the target spike train of neuron $i$.
+The cost model for optimization that make $\hat S_i$ approach the real $S_i$ hold the form:
+$L=\frac12 \int_{-\infty}^t ds[(\alpha * \hat S_i - \alpha * S_i)(s)]^2$.
+
+$\alpha$ is a normalized smooth temporal convolution kernel. The original SuperSPike use 
+\textit{double exponential causal kernel}.
+
+$$\partial L/\partial w_{ij}=-\int_{-\infty}^t ds[(\alpha * \hat S_i - \alpha * S_i)(s)](\alpha * \frac{\partial S_i}{\partial w_{ij}})(s)$$.
+
+Some existing methods for tackling the term $\frac{\partial S_i}{\partial w_{ij}}$:
+(1) making derivation directly to the membrance voltage, 
+(2) introducing noisy which render the likelihood of $\langle S_i \rangle$ a smooth function of the membrance potential.
+
+The superspike convert calculation of $\frac{\partial S_i}{\partial w_{ij}}\rightarrow \sigma'(U_i)\frac{\partial U_i}{\partial w_{ij}}$.
+In which $U_i$ is the membrance voltage.
+Original superspike choose $\sigma(U)$ be the negative side of a fast sigmoid.
+This function is objective to increase steeply and peak at the spiking threshold.
+Other monotonic functions may also work.
+
+For current-based LIF models the membrane potential $U_i(t)$ can be written in integral form as 
+a spike response model (SRM0 (Gerstner et al., 2014)):
+$U_i(t) = \sum_j w_{ij} (\epsilon * S_j(t)) + (\eta * S_i(t))$ 
+
+
+
+In which, $\epsilon$ corresponds to the postsynaptic potential (PSP) shape, $\eta$ captures 
+spike dynamics and reset.
+
+The existence of term $(\eta * S_i(t))$ make us difficult to perform derivation. Now, 
+$U_i(t)\approx (\epsilon * S_j(t))$.
+
+The gradient calculation for a weight become:
+$$\frac{\partial w_{ij}}{\partial t}=r\int_{-\infty}^t ds e_i(s) \alpha * (\sigma'(U_i(s))(\epsilon * S_j)(s))$$.
+
+$r$ is the learning rate, $e_i(s)\equiv \alpha * (\hat S_i - S_i)$, $\lambda_{ij} = \alpha * (\sigma'(U_i(s))(\epsilon * S_j)(s))$
+ is the eligibility trace. The form above is also known as \textit{non-vanishing surrogate gradient}.
+
+The neuron model utilized by the SuperSpike is $$\tau^{mem}\frac{dU_i}{dt} = (U^{rest} -U_i) +I_i^{syn}(t)$$.
+And synapse evolution model is $$\frac{d}{dt} I_i^{syn}(t) =-\frac{I_i^{syn}(t)}{\tau^{syn}} + \sum_{j\in pre}w_{ij}S_j(t)$$.
+
+% \textbf{Distal Reward Problem}
+% \textbf{Eligibility trace}
+
+% \textbf{Causal Convolution}
+
+
+% Nonlinear Hebbian term detects coincidences between presynaptic activity and postsynaptic depolarization.
+% Hebbian three factor rule
+% These spatiotemporal coincidences at the single synapse wij are then stored transiently by the temporal 
+% convolution with the causal kernel $\alpha$.
+% This step can be interpreted as a synaptic eligibility trace, which in neurobiology could for instance be
+%  implemented as a calcium transient or a related signaling cascade.
+
+%  $$\frac{\partial w_{ij}}{\partial t}=r_{ij}\int_{t_k}^{t_{k+1}} e_i(s) \alpha * (\sigma'(U_i(s))(\epsilon * S_j)(s))ds$$.
+
+%  $\epsilon$ is a double exponential filter.
+%  The original SuperSpike use two single exponential filter to realize it.
+%  In each time step, it firstly integrate the single exponential trace by
+%   $\frac{dz_j}{dt}=-\frac{z_j}{\tau_{rise}} + S_j(t)$.
+%   It then fed into a second exponential filter array $\tau_{decay} \frac{\tilde z_j}{dt}=-\tilde z_j + z_j$.
+
+%   $\tilde z_j(t) \equiv (\epsilon * S_j)(t)$.
+
+%   $\sigma'(U_i) =(1+|h_i|^2)$ with $h_i \equiv \beta(U_i-\ell)$, where $\ell$ is the neuronal firing threshold.
+
+%   Error signals include output error signal and feedback error signal. The formmer is the error between output
+%    spike train and predicted spike train. Feedback signals are signals that derived from the output error signal.
+
+%   $\alpha \propto \epsilon$.
+%   For output signal $e_i = -\alpha * (\tilde S_i - S_i)$.
+%   For feedback signals
+%   (1) Symmetric Feedback: $e_i = \sum_k w_{ki}e_k$,
+%   (2) Random Feedbck: $e_i = \sum_k b_{ki}e_i$, where $b_{ki}\sim N(0,1)$,
+%   (3) Uniform Feedback: $e_i = \sum_k e_k$.
+
+%   For weight update it use a separate variable $m_{ij}$ in a specific chunk size $t_b$.
+%   $m_{ij} \leftarrow m_{ij} + g_{ij}$, $g_{ij}(t) = e(t)\lambda_{ij}(t)$.
+%     At the end of each $t_b$, $w_{ij} \leftarrow w_{ij} + r_{ij}m_{ij}$, where $r_{ij}$ it
+%     the learning rates.
+%     They ensure $-0.1 < w_{ij} < 0.1$.
+
+%     In some experiment, regularity term may be added in the the weight learning rule.
+%     $$\frac{\partial w_{ij}^{hid}}{\partial t} = r_{ij}\int_{t_k}^{t_{k + 1}}e_i(s)(\alpha * (\sigma'(U_i(s))(\epsilon * S_j)(s))-\rho w_{ij}e_i(s)z_i^4) ds$$.
+
+%     Regularization strength $\rho$ was chosen to be the square of error.
+
+%     $\frac{z_i}{dt} = -\frac{z_i}{\tau_{het}}+S_i(t)$.
+
+% \textbf{Pprobabilistic escape rate model (Pfister et al. (2006))}
+
+% \textbf{Victor-Pupura distance-based learning (Victor and Purpura, 1997)}
+
+% \textbf{Convergence properties of rules that reduce the van Rossum distance 
+% by gradient descent. (Gardner and Grüning (2016) and Albers et al. (2016))}
+
+% \textbf{Learning algorithm Proposed by Memmesheimer et al. (2014)}
+
+% \textbf{Sequence Learning Problem as a Variational Learning Problem}
+
+% \textbf{Combining adaptive control theory with heterogeneous neurons. (Gilra and Gerstner, 2017)}
+
+% \textbf{Tempotron (Gütig and Sompolinsky, 2006; Gütig, 2016)}
+% can be derived as a gradient-based approach (Urbanczik and Senn, 2009).
+
+
+% It is chanllenging in calcultion of $\frac{\partial S_i(t)}{\partial w_{ij}}$, where $S_i(t) = \sum_k \delta(t-t_i^k)$.
+% $S_i(t)$ is the spike train of neuron $i$.
+
+
+
+\subsection{SPAN (Mohemmed et al., 2012)}
+
+\subsection{Remote Supervised Method (ReSuMe)}
+\subsection{FreqProp}
+\subsection{Local error-driven associative biologically realistic algorithm (LEABRA)}
+\subsection{Supervised Hebbian Learning}
+
+\section{Reinforcement Learning}
+\subsection{Spiking Actor-Critic method}
+\subsection{STDP-based Methods}
+
+\section{Convert Trandictional ANN to SNN}

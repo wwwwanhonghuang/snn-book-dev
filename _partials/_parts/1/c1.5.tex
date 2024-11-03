@@ -1,0 +1,56 @@
+
+\chapter{Network Architecture Investigation}
+\section{Liquid Neural Network}\index{Liquid Neural Network}
+\textbf{State Space Models (SSM)}
+
+\textbf{Linear State Space Models}
+
+\textbf{Structured State Space Model (S4)~\cite{lnn-s4}}
+
+\textbf{Liquid Time Constant (LTC) Model~\cite{ltc}}
+
+\textbf{Linear Liquid Time Constant Model}
+
+
+\textbf{High-order Polynomial Projection Operator (HiPPO)}
+
+\textbf{Normal Plus Low-Rank (NPLR)}
+
+\textbf{Scaled Legendre Measure (LegS)}
+
+\textbf{HiPPO Matrix}
+
+\textbf{black-box Cauchy Kernel}
+
+\textbf{Coupled Bilinear}
+
+\textbf{Dynamics Causal Model}
+
+
+Liquid structure state space model~\cite{lnn-4s} introduce the liquid time constant into the 
+structure state model. Specifically it hold the form in Equation~\ref{eq:lnn-ltc-4s}.
+
+\begin{equation}\label{eq:lnn-ltc-4s}
+\frac{d\bold {x}(t)}{dt} = -[\bold {A} + \bold {B} \otimes f(\bold {x}(t), \bold {u}(t), t, \theta)]\otimes \bold {x}(t) + \bold {B}
+\otimes f(\bold {x}(t), \bold {u}(t), t, \theta)
+\end{equation}
+
+A linear version could be expressed by the form of Equation~\ref{lnn-ltc-4s-linear}.
+\begin{align}\label{lnn-ltc-4s-linear}
+    \dot{\bold {x}}(t) = [\bold {A} + \mathbb {I}_N \bold {B} u(t)] \bold x(t) + \bold {B} u(t),\; y(t) = \bold {C} \bold x(t)
+\end{align}
+
+The output $y_k$ for input $u_0$ to $u_k$ can be represented by $y=\bar K * u + \bar K_{liquid} * u_{correlation}$.
+In which the $*$ is the convolution operator. This equation divide the calculation of $y_k$ to the calculation of the 
+kernel $\bar K$, and the convolution between the kernal and input, and the convolution between the kernal and input
+ correlation.
+
+
+
+
+\section{Feedforward Neural Network}
+\section{Recurrent Neural Network}\index{Recurrent Neural Network}
+\section{Synfire Chain}
+\section{Reservoir Computing}\index{REservoir Computing}
+\subsection{Liquid State Machine}\index{Liquid State Machine}
+
