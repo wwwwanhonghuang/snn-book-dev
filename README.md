@@ -18,7 +18,18 @@ For any errors, feedback, or inquiries regarding the handbook, please reach out 
 
 Alternatively, posting an issue would also be appreciated.
 
+## Plans
+### PART I: Software Neuromorphic Computing
+This part specially discuss the software spiking neural network and dynamical system. 
+Discusses the simulation of the nervous system in microscopic world and a macroscopic world.
+This part will cover **neuron models**, **synapse models**, **network structures**, **training algorithms**, **simulation algorithms**, **dynamical system** and more. 
+The content will cover both the discussion of simulation in the **classical case** as well as simulation in the **quantum case**.
 
+### PART II: Dynamics Analysis
+
+### PART III: Hardware Neuromorphic Computing
+
+### PART IV: Applications
 
 ## Current Status
 

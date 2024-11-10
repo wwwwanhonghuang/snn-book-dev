@@ -3,17 +3,24 @@
 \section{Biological Synapse}\index{Biological Synapse and Taxonomy}
 
 \section{Synapse Abstract and Taxonomy}
-% Similar to neuron dynamics, the synapse dynamics could be modeled a state space model,
-% and the current $I$ is included in the state $\bold x_t$. We only need modified the 
-% constraint term, as shown in Equation~\ref{eq:synapse-state-space-abstract-1} to 
-% Equation~\ref{eq:synapse-state-space-abstract-4}. 
+Similar to neuron dynamics, the synapse dynamics could be modeled a state space model,
+and the current $I$ is included in the state $\bold x_t$. We only need modified the 
+constraint term, as shown in Equation~\ref{eq:synapse-state-space-abstract-1} to 
+Equation~\ref{eq:synapse-state-space-abstract-4}. 
 
 % \begin{align}
 %     \Delta \bold x_t = f(\bold x_t, \bold u_t) \label{eq:synapse-state-space-abstract-1} \\
 %     \bold y_t = g(\bold x_t, \bold u_t) \label{eq:synapse-state-space-abstract-2} \\
-%     s.t.,\; (\exists i \in [0, |\bold x_t|])(\bold x_{t})_{i} = I_t \label{eq:synapse-state-space-abstract-3}\\
-%             (\exists i \in [0, |\bold y|])_i\bold y = V_{out} \label{eq:synapse-state-space-abstract-4}
+%     s.t.,\; (\exists i \in [0, |\bold x(t)|])(\bold x_{t})_{i} = I_t \label{eq:synapse-state-space-abstract-3}\\
+%             (\exists i \in [0, |\bold y(t)|])_i\bold y = I_{out} \label{eq:synapse-state-space-abstract-4}
 % \end{align}
+
+The synapse model can be categorized to current-based synapses and 
+conductance-based synapses. Both of them can be seems as a 
+convolution operations on the generalized weighted preneuron spike train.
+Specifically, we may write $I(t)=(\theta\cdot S(t)) * h(t)$, where $\theta\triangleq \{w_i, g_{max}\}$, 
+, $h(t)$ is a convolution kernel, and $S(t)$ is the pre-synapse neuron's spike train.
+
 
 \subsection{Current-based Synapse}
 % In current-based synapses, the postsynaptic effect is modeled as an 
