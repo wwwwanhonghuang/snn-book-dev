@@ -2,6 +2,38 @@
 
 \chapter{Trainning Algorithms}
 
+\section{Taxonomy of Training Algorithms}
+From the form of data utilized in the training, we could categories training algorithms of spike neural network
+into largely two categories: unsupervior learning and supervise learning.
+While unsupervior learning not explictly specify the expect outcomes in the dataset and align the model to these
+explicit-specified outcomes , supervior learning explictly specify the expect outcomes in the dataset.
+
+From the theory basis, in this book, we categories the training algorithms into $4$ categories:
+\begin{itemize}
+\item \textbf{surrogate gradient descending methods}: The basic idea of surrogate gradient descending methods
+are utilize surrogate methods to solve the undifferntial term $\frac{\partial S(t)}{\partial w_{ij}}$
+appear in the gradient descending-based loss optimizations. $S(t)$ is a spike train of a neuron, and $w_{ij}$
+is the synapse weight from neuron $j$ to neuron $i$.
+
+\item \textbf{bio-phenomena-based methods}: The bio-phenomena-based inspired by bio-phenomena to adjust the 
+weights dynamically. One kind of these methods is the spike-timing-dependent plasticity (STDP)-based methods,
+ which inspired by the \textit{long-term potentiation (LTP)} and the \textit{long-term depression (LTD)} in
+ the bioneural networks. Base on the difference in time of the the spike emit from pre-post neurons, STDP-based
+ methods adjust the synapse weights. 
+
+\item \textbf{statistical mechanism-based methods}:
+Statistical mechanism-based methods tackle the whole networks as a statistical mechanism system.
+Statistical mechanism methods are used to model the property (e.g., system energy), and the interaction 
+between neurons. With optimize on the system energy, we adjust the weights of synapses.
+
+\item \textbf{observation methods}:
+rather than well-train the neural network, observation methods focus on design and training 
+observation models on the neural network. As the system property of neural network at a certain time $t$,
+contains rich information about the dynamics of input data, by well-design an observation method, 
+we has the potential to obtain the outcomes we expect.
+
+\end{itemize}
+
 
 
 \section{Unsupervior Learning}

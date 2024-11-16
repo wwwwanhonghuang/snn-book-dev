@@ -1,7 +1,7 @@
 
 %%\chapterimage{ima2} % Chapter heading image
 
-\chapter{Neuron Dynamics}\
+\chapter{Neuron Models}\
 
 Spiking neural network's neuron model describe how the membrance potential of a neuron change over the time.
 In this chapter, we dive into the biological neuron's dynamics and exhibit several examples neuron models in the 
@@ -14,122 +14,110 @@ spiking neural network.
 \section{Biological Neuron}\index{Biological Neuron}
 
 
-\section{Neuron Model Abstract and Taxonomy}\index{Neuron Model Abstract and Taxonomy}
+\section{Abstract of Neuron Models}\index{Abstract of Neuron Models}
 In spiking neural network, Equation~\ref{eq:neuron-state-space-abstract-1} to
-Equation~\ref{eq:neuron-state-space-abstract-4} provide a highly abstract description for
- modeling a biological neuron.
-In these equation, $\bold x_t$ is the state vector at time $t$, $\Delta x_t$ is the state variation at time 
-$t$, $\bold u_t$ is the input vector at time $t$, $V$ is the membrane potential of the neuron, 
-$\bold y_t$ is the neuron's output at time $t$, 
-and $V_{out}$ is the output voltage that will be sent to the synapses that depature from this neuron. 
-$(\bold x_{t})_{i}$ is the $i$-th element of the state vector.
+Equation~\ref{eq:neuron-state-space-abstract-4} in the form of \textbf{state-space models (SMMs)}.
+provide a highly abstract description for describe a biological neuron.
+
+In these equation, $\bold x(t)$ is the state vector at time $t$, $\dot x(t)$ is the state variation at time 
+$t$, $\bold I(t)$ is the input current at time $t$, $V$ is the membrane potential of the neuron, 
+$\bold y(t)$ is the neuron's output at time $t$, and $V_{out}$ is the output voltage tha will be sent to the 
+synapses that depature from this neuron. 
+$(\bold x(t))_{i}$ is the $i$-th element of the state vector. $\mathcal P$ is the model parameters.
 
 \begin{align}
-    \Delta \bold x_t = f(\bold x_t, \bold u_t) \label{eq:neuron-state-space-abstract-1} \\
-    \bold y_t = g(\bold x_t, \bold u_t) \label{eq:neuron-state-space-abstract-2} \\
-    s.t.,\; (\exists i \in [0, |\bold x_t|])(\bold x_{t})_{i} = V \label{eq:neuron-state-space-abstract-3}\\
-            (\exists i \in [0, |\bold y|])_i\bold y = V_{out} \label{eq:neuron-state-space-abstract-4}
+    \dot {\bold x}(t) = f(\bold x(t), \bold I(t), t, \mathcal P) \label{eq:neuron-state-space-abstract-1}  \\
+    \bold y(t) = g(\bold x(t), \bold I(t), t, \mathcal P) \label{eq:neuron-state-space-abstract-2} \\
+    s.t.,\; (\exists i \in [0, |\bold x(t)|])(\bold x({t}))_{i} = V(t) \label{eq:neuron-state-space-abstract-3} \\
+            (\exists i \in [0, |\bold y(t)|])_i\bold y(t) = V_{out}(t) \label{eq:neuron-state-space-abstract-4}
 \end{align}
-
-These equations are in the form of a \textbf{state-space model (SMM)}.
 
 
 Equation~\ref{eq:neuron-state-space-abstract-3} indicates that, a neuron should maintain a membrane potential $V$, 
 and Equation~\ref{eq:neuron-state-space-abstract-4} indicates that, the neuron's output should contains a 
 voltage $V_{out}$.
 
-\subsection{Current-based Neuron}\index{Current-based Neuron}
-In a current-based neuron model, the synaptic input is represented as an injected current directly 
-added to the membrane potential equation.
-we have the input $\bold u_t$ contains the current $I_t$, and $\bold x_t$ contains the membrance potential $V_t$.
+A discretization version present in Equation~\ref{eq:discrete-neuron-state-space-abstract-1} to 
+Equation~\ref{eq:discrete-neuron-state-space-abstract-4}.
 
-We will later to see that a current-based LIF neuron (Section~\ref{sec:current-based-lif}) can hold a form of 
-Equation~\ref{eq:current-based-lif-state-space}.
-
-
-\begin{equation}\label{eq:current-based-lif-state-space}
-    \dot V_t = \frac{1}{\tau_m}(-(V_t-V_{rest})+I_t) = f_{CurrentLIF_1}(V_t, \bold u_t = [I_t])
-\end{equation}
-
-
-
-\subsection{Conductance-based Neuron}\index{Conductance-based Neuron}
-In a conductance-based neuron model, the synaptic input is modeled by changing the conductance of the membrane, 
-which then affects the current flow.
-
-In the state space representation, the input $\bold u_t$ is the synapse conductance.
-let $\bold u_t=g_{syn}(t)$, $\bold x_t = V_t$, we will see that in conductance-based LIF neuron model, it 
-hold Equation~\ref{eq:condunce-based-lif-state-space}
-
-\begin{equation}\label{eq:condunce-based-lif-state-space}
-    \dot V_t = \frac{1}{\tau_m}(-(V_t-V_{rest})+g_syn(t)(E_{syn}-V_t)) = f_{ConductanceLIF_1}(V_t,  \bold u_t = g_{syn}(t))
-\end{equation}
-
-
+\begin{align}
+    {\bold x}_{t + 1} = f(\bold x_t, \bold I_t, t, \mathcal P) \label{eq:discrete-neuron-state-space-abstract-1}  \\
+    \bold y_t = g(\bold x_t, \bold I_t, t, \mathcal P) \label{eq:discrete-neuron-state-space-abstract-2} \\
+    s.t.,\; (\exists i \in [0, |\bold x_t|])(\bold x_{t})_{i} = V_t \label{eq:discrete-neuron-state-space-abstract-3} \\
+            (\exists i \in [0, |\bold y_t|])_i\bold y = V_{out_t} \label{eq:discrete-neuron-state-space-abstract-4}
+\end{align}
 
 
 \section{Neuron Model Examples}\index{Neuron Model Examples}
 \subsection{Hodgkin-Huxley (HH) Model}\index{Hodgkin-Huxley (HH) Model}
 
-The Hodgkin-Huxley (HH) model is a conductance-based model , which can be utilize to accurately 
-reproduce the bio-neuron's dynamics. Its form is shown in Equation~\ref{eq:hh-model-1} to Equation~\ref{eq:hh-model-5}.
-Combine all these equations, we get Equation~\ref{eq:hh-model-6}.
-% \begin{align} 
-% \begin{split}
-% P(y=1/x)   &=P(y*>0/x)=P[x\beta+e>0/x]=P[e>-(\beta_{0}+x\beta)/x]\\
-% &=1-F[-(\beta_{0}+x\beta)]=F(\beta_{0}+x\beta)
-% \end{split}					
-% \end{align}
+The Hodgkin-Huxley (HH) model can be utilize to accurately 
+reproduce the bio-neuron's dynamics. Its mathematical formulation is presented in
+Equations~\ref{eq:hh-model-1} to~\ref{eq:hh-model-5}.
+By combining all these equations, we arrive at Equation~\ref{eq:hh-model-6}.
 
 \begin{align}
-    I = C_m\frac{dV_m}{dt} + I_{i} \label{eq:hh-model-1} \\
-    I_i = I_{Na} + I_K + I_l \label{eq:hh-model-2}  \\
-    I_{Na} = g_{Na}(V_m - V_{Na}) \label{eq:hh-model-3} \\
-    I_K = g_{K}(V_m - V_{K}) \label{eq:hh-model-4}  \\
-    I_l = \bar g_{l}(V_m - V_{l}) \label{eq:hh-model-5} 
+    I(t) = C_m\frac{dV_m(t)}{dt} + I_{i}(t) \label{eq:hh-model-1} \\
+    I_i(t) = I_{Na}(t) + I_K(t) + I_l(t) \label{eq:hh-model-2}  \\
+    I_{Na}(t) = g_{Na}(t)(V_m(t) - V_{Na}(t)) \label{eq:hh-model-3} \\
+    I_K(t) = g_{K}(t)(V_m(t) - V_{K}(t)) \label{eq:hh-model-4}  \\
+    I_l(t) = \bar g_{l}(t)(V_m(t) - V_{l}(t)) \label{eq:hh-model-5} 
 \end{align}
 
 \begin{equation}\label{eq:hh-model-6}
-    I_l = C_m\frac{dV_m}{dt} + g_{Na}(V_m - V_{Na}) + g_{K}(V_m - V_{K}) + \bar g_{l}(V_m - V_{l})
+    I(t) = C_m\frac{dV_m(t)}{dt} + g_{Na}(t)(V_m(t) - V_{Na}(t)) + g_{K}(V_m(t) - V_{K}(t)) + 
+        \bar g_{l}(t)(V_m(t) - V_{l}(t))
 \end{equation}
 
 Ion channel function $g_{\cdot}$ are function respect to time $t$ and membrance potential $V$.
 Specifically, Equation~\ref{eq:hh-model-7} is held.
 
 \begin{equation}\label{eq:hh-model-7}
-    g_{Na} = \bar g_{Na}m^3h \\
-    g_{K} = \bar g_{K}n^4 \\
-    g_{l} = \bar g_l \\
+    g_{Na}(t) = \bar g_{Na}m^3(t)h(t) \\
+    g_{K}(t) = \bar g_{K}n^4(t) \\
+    g_{l}(t) = \bar g_l \\
 \end{equation}
 
-Combine Equation~\ref{eq:hh-model-1} to Equation~\ref{eq:hh-model-7}, we get Equation~\ref{eq:hh-model-8}
+By combining Equations~\ref{eq:hh-model-1} to~\ref{eq:hh-model-7}, we arrive at Equation~\ref{eq:hh-model-8}.
 \begin{equation}\label{eq:hh-model-8}
-    I_l = C_m\frac{dV_m}{dt} + \bar g_{Na}m^3h(V_m - V_{Na}) + \bar g_{K}n^4(V_m - V_{K}) + \bar g_{l}(V_m - V_{l})
+    I = C_m\frac{dV_m(t)}{dt} + \bar g_{Na}(t)m^3(t)h(t)(V_m(t) - V_{Na}(t)) + 
+    \bar g_{K}(t)n^4(t)(V_m(t) - V_{K}(t)) + \bar g_{l}(t)(V_m(t) - V_{l}(t))
 \end{equation}
 
-$\frac{d\cdot}{dt}= \alpha_\cdot(V_m)(1-\cdot)-\beta_\cdot(V_m)\cdot $ is held. Where $\cdot$ is a placeholder for
-$m$, $n$ and $h$. As such, Equation~\ref{eq:hh-model-9} to Equation~\ref{eq:hh-model-11} are held.
+$\frac{d\cdot}{dt}= \alpha_\cdot(V_m)(1-\cdot)-\beta_\cdot(V_m)\cdot $ is held. 
+In which, $\cdot$ is a placeholder for $m(t)$, $n(t)$ and $h(t)$. As such, Equation~\ref{eq:hh-model-9} to 
+Equation~\ref{eq:hh-model-11} are held.
 
 \begin{align}
-    \frac{dn}{dt}= \alpha_n(V_m)(1-n)-\beta_n(V_m)n \label{eq:hh-model-9}\\
-    \frac{dm}{dt}= \alpha_m(V_m)(1-m)-\beta_m(V_m)m \label{eq:hh-model-10}\\
-    \frac{dh}{dt}= \alpha_h(V_m)(1-h)-\beta_h(V_m)h \label{eq:hh-model-11}\\
+    \frac{dn(t)}{dt}= \alpha_n(V_m(t))(1-n(t))-\beta_n(V_m(t))n(t) \label{eq:hh-model-9}  \\
+    \frac{dm(t)}{dt}= \alpha_m(V_m(t))(1-m(t))-\beta_m(V_m(t))m(t) \label{eq:hh-model-10} \\
+    \frac{dh(t)}{dt}= \alpha_h(V_m(t))(1-h(t))-\beta_h(V_m(t))h(t) \label{eq:hh-model-11} \\
 \end{align}
 
-From experiment, 
-we have Equation~\ref{eq:hh-model-12} to Equation~\ref{eq:hh-model-17}.
+From experiment, Equation~\ref{eq:hh-model-12} to Equation~\ref{eq:hh-model-17} were obtained.
 
 \begin{align}
-    \alpha_n(V_m) = \frac{0.01(10-V)}{exp(\frac{10-V}{10}) - 1} \label{eq:hh-model-12}\\
-    \alpha_m(V_m) = \frac{0.1(25-V)}{exp(\frac{25-V}{10}) - 1} \label{eq:hh-model-13}\\
-    \alpha_h(V_m) = 0.07exp(-\frac{V}{20}) \label{eq:hh-model-14}\\
-    \beta_n(V_m) = 0.125exp(-\frac{V}{80}) \label{eq:hh-model-15}\\
-    \beta_m(V_m) = 4exp(-\frac{V}{18}) \label{eq:hh-model-16}\\
-    \beta_h(V_m) = \frac{1}{exp(\frac{30-V}{10})+1} \label{eq:hh-model-17}
+    \alpha_n(V_m(t)) = \frac{0.01(10 - V_m(t))}{exp(\frac{10-V_m(t)}{10}) - 1} \label{eq:hh-model-12}\\
+    \alpha_m(V_m(t)) = \frac{0.1(25 - V_m(t))}{exp(\frac{25-V_m(t)}{10}) - 1} \label{eq:hh-model-13}\\
+    \alpha_h(V_m(t)) = 0.07exp(-\frac{V_m(t)}{20}) \label{eq:hh-model-14}\\
+    \beta_n(V_m(t)) = 0.125exp(-\frac{V_m(t)}{80}) \label{eq:hh-model-15}\\
+    \beta_m(V_m(t)) = 4exp(-\frac{V_m(t)}{18}) \label{eq:hh-model-16}\\
+    \beta_h(V_m(t)) = \frac{1}{exp(\frac{30-V_m(t)}{10})+1} \label{eq:hh-model-17}
 \end{align}
 
-Hodgkin-Huxley could be seen as a current-based neuron model, which may represent by space state model,
-with $\bold x_t = [V_t, m_t, h_t, n_t]$, and $\bold u_t = I_t$.
+Finally, we write the state-space model representation from Equation~\ref{eq:smm-hh-1} to 
+Equation~\ref{eq:smm-hh-8} for Hodgkin-Huxley model.
+
+\begin{align}
+    x(t) = \begin{bmatrix}V_m(t) & n(t) & m(t) & h(t)\end{bmatrix} \label{eq:smm-hh-1}\\
+    \dot x(t) = \begin{bmatrix}\dot V_m(t) & \dot n(t) & \dot m(t) & \dot h(t)\end{bmatrix}\label{eq:smm-hh-2} \\
+    \dot V_m(t) = -\frac{1}{C_m}(\bar g_Kn^4(t)(V_m(t)-V_K)+\bar g_{Na}m^3(t)h(t)+\bar g_l(V_m(t)-V_l(t)) - I(t)) \label{eq:smm-hh-4}\\
+    \dot n(t)= \alpha_n(V_m(t))(1-n(t))-\beta_n(V_m(t))n(t) \label{eq:smm-hh-5}\\
+    \dot m(t)= \alpha_m(V_m(t))(1-m(t))-\beta_m(V_m(t))m(t) \label{eq:smm-hh-6}\\
+    \dot h(t)= \alpha_h(V_m(t))(1-h(t))-\beta_h(V_m(t))h(t) \label{eq:smm-hh-7}\\
+    V_out(t) = V_m(t) \label{eq:smm-hh-8}
+\end{align}
+
 
 \subsection{Leaky Integrate-and-fire Model}\index{Leaky Integrate-and-fire Model}
 \label{sec:current-based-lif}
@@ -137,7 +125,8 @@ Leaky Integrate-and-fire model is a computational effective model,
 in which a threshold is set, when membrance potential cross the threshold, 
 the neuro emit a spike. 
 In implementation, we may set the voltage output at time $t$, $V_{out}$ be $1\;mV$. 
-The scale problem has the potential to be solved by automatically adjusting the synapses' weights in trainning.
+The scale problem has the potential to be solved by automatically adjusting the synapses' weights 
+in trainning.
 A LIF neuron $i$'s output form a \textbf{spike train} $S_{i}(t) = \sum_{m}\delta(t-t_m)$.
 
 \begin{equation}\label{eq:lif}
@@ -160,7 +149,6 @@ A LIF neuron $i$'s output form a \textbf{spike train} $S_{i}(t) = \sum_{m}\delta
 \subsection{Cable theory}\index{Cable theory}
 
 \subsection{Perfect Integrate-and-fire}\index{Perfect Integrate-and-fire}
-
 
 \subsection{Adaptive Integrate-and-fire}\index{Adaptive Integrate-and-fire}
 

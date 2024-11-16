@@ -1,0 +1,66 @@
+
+\chapter{Macroscopic Models}
+\section{Dynamical System Model}\index{Biological Synapse and Taxonomy}
+
+\section{Synapse Abstract and Taxonomy}
+Similar to neuron dynamics, the synapse dynamics could be modeled a state space model,
+and the current $I$ is included in the state $\bold x_t$. We only need modified the 
+constraint term, as shown in Equation~\ref{eq:synapse-state-space-abstract-1} to 
+Equation~\ref{eq:synapse-state-space-abstract-4}. 
+
+% \begin{align}
+%     \Delta \bold x_t = f(\bold x_t, \bold u_t) \label{eq:synapse-state-space-abstract-1} \\
+%     \bold y_t = g(\bold x_t, \bold u_t) \label{eq:synapse-state-space-abstract-2} \\
+%     s.t.,\; (\exists i \in [0, |\bold x(t)|])(\bold x_{t})_{i} = I_t \label{eq:synapse-state-space-abstract-3}\\
+%             (\exists i \in [0, |\bold y(t)|])_i\bold y = I_{out} \label{eq:synapse-state-space-abstract-4}
+% \end{align}
+
+The synapse model can be categorized to current-based synapses and 
+conductance-based synapses. Both of them can be seems as a 
+convolution operations on the generalized weighted preneuron spike train.
+Specifically, we may write $I(t)=(\theta\cdot S(t)) * h(t)$, where $\theta\triangleq \{w_i, g_{max}\}$, 
+, $h(t)$ is a convolution kernel, and $S(t)$ is the pre-synapse neuron's spike train.
+
+
+\subsection{Current-based Synapse}
+% In current-based synapses, the postsynaptic effect is modeled as an 
+% instantaneous current added to the postsynaptic neuron.
+% Example: Synaptic current as an exponential decay
+% \begin{equation}
+% I_{syn}(t)=I_{peak}e^{-(t-t_{spike})/\tau_s}
+% \end{equation}
+% $I_{peak}$: peak current. $t_{spike}$: the time of the presynaptic spike. 
+% $\tau_s$:  the time constant of the synaptic current.
+
+% In the context of synaptic models, the $V$ in the synaptic current equation 
+% generally refers to the membrane potential of the postsynaptic neuron
+
+\subsection{Conductance-based Synapse}
+% E.g., Alpha function synapse:
+% $g_{syn}(t)=g_{max}\frac{t-t_{spike}}{\tau}e^{-\frac{t-t_{spike}}{\tau}}$
+% The synaptic current then becomes:
+% $I_{syn}(t)=g_{syn}(t)(E_{syn}-V(t))$
+
+\subsection{Chemical Synapse}
+% Chemical synapses can be modeled using either current-based or conductance-based approaches,
+%  but these are modeling choices rather than fundamentally different categories. 
+
+ \textbf{Current-based Synapse}
+
+%  Modeling Approach: In a current-based synapse model, the effect of neurotransmitter release 
+%  is represented as an injected current directly added to the postsynaptic
+%   neuron's membrane potential.
+
+\textbf{Conductance-based Synapse}
+
+%   Modeling Approach: In a conductance-based synapse model, the effect of neurotransmitter 
+%   release is modeled by changing the synaptic conductance, which then affects the current flow based 
+%   on the difference between the membrane potential and the synaptic reversal potential.
+
+\section{Discussion}
+% In a summary, all kind of neuron should maintains a state of membrance $V$, its variation can in a 
+% current-based method or a condunctance-based method. The variation of $V$ can make the current changed 
+% in synapse. And current $I$ is a nessary state maintained by synapses no matter in what kind of methods.
+% Though in a condunctance-based method, we can retrieve the synapse $I$ from equations. 
+
+
