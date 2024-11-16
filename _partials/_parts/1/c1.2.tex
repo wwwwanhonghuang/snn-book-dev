@@ -29,7 +29,7 @@ $(\bold x(t))_{i}$ is the $i$-th element of the state vector. $\mathcal P$ is th
     \dot {\bold x}(t) = f(\bold x(t), \bold I(t), t, \mathcal P) \label{eq:neuron-state-space-abstract-1}  \\
     \bold y(t) = g(\bold x(t), \bold I(t), t, \mathcal P) \label{eq:neuron-state-space-abstract-2} \\
     s.t.,\; (\exists i \in [0, |\bold x(t)|])(\bold x({t}))_{i} = V(t) \label{eq:neuron-state-space-abstract-3} \\
-            (\exists i \in [0, |\bold y(t)|])_i\bold y(t) = V_{out}(t) \label{eq:neuron-state-space-abstract-4}
+            (\exists i \in [0, |\bold y(t)|])(\bold y(t))_i = V_{out}(t) \label{eq:neuron-state-space-abstract-4}
 \end{align}
 
 
@@ -115,7 +115,7 @@ Equation~\ref{eq:smm-hh-8} for Hodgkin-Huxley model.
     \dot n(t)= \alpha_n(V_m(t))(1-n(t))-\beta_n(V_m(t))n(t) \label{eq:smm-hh-5}\\
     \dot m(t)= \alpha_m(V_m(t))(1-m(t))-\beta_m(V_m(t))m(t) \label{eq:smm-hh-6}\\
     \dot h(t)= \alpha_h(V_m(t))(1-h(t))-\beta_h(V_m(t))h(t) \label{eq:smm-hh-7}\\
-    V_out(t) = V_m(t) \label{eq:smm-hh-8}
+    V_{out}(t) = V_m(t) \label{eq:smm-hh-8}
 \end{align}
 
 
@@ -127,32 +127,133 @@ the neuro emit a spike.
 In implementation, we may set the voltage output at time $t$, $V_{out}$ be $1\;mV$. 
 The scale problem has the potential to be solved by automatically adjusting the synapses' weights 
 in trainning.
-A LIF neuron $i$'s output form a \textbf{spike train} $S_{i}(t) = \sum_{m}\delta(t-t_m)$.
+A LIF neuron $i$'s output form a \textbf{spike train} $S_{i}(t) = \sum_{t_m}\delta(t-t_m)$.
+In which $t_m$ is the spike emission time. $\delta(\cdot)$ is the \textit{Dirac Delta} function.
 
+A LIF's membrane potential variation can be discribe by the Equation~\ref{eq:lif}.
+In which $V_{reset}$ is the reset potential. The neuron's membrane potential will be reset to $V_{rest}$
+after a spike emission.
+A threshold potential $V_{th}$ is defined. Each time the membrane potential exceed the $V_{th}$, A
+LIF neuron emit a spike, and reset its membrane potential to $V_{rest}$
 \begin{equation}\label{eq:lif}
-    \dot V_t = \frac{1}{\tau_m}(-(V_t-V_{rest})+g_syn(t)(E_{syn}-V_t))
+    \tau_m\frac{\dot V_m(t)}{dt} = -(V_m(t)-V_{rest}) + R_mI(t)
 \end{equation}
+
+In practice, a \textit{refactor period} usually associated with a LIF neuron. 
+The LIF neuron does not emit a spike during the refractory period. 
+Finally, we present the state-space model representation of the LIF neuron in Equations~\ref{eq:smm-lif-1}
+to~\ref{eq:smm-lif-3}.
+
+\begin{align}
+    x(t) = \begin{bmatrix}V_m(t) & t_{last\_emit}\end{bmatrix} \label{eq:smm-lif-1} \\
+    \dot x(t) = \begin{bmatrix}\dot V_m(t) & \dot t_{last\_emit}\end{bmatrix} \label{eq:smm-lif-2} \\
+    \dot V_m(t) = \begin{cases}
+        V_{rest}, \quad V_m(t) + \dot V_m(t) \ge V_{th}\;and\;t-t_{last\_emit}\ge t_{refactor}  \\
+        -\frac{1}{\tau_m}(V_m(t)-V_{rest}) + R_mI(t),\quad otherwise
+    \end{cases} \label{eq:smm-lif-3}\\
+    \dot t_{last\_emit}(t) = \begin{cases}
+        t-t_{last\_emit}, \quad V_m(t) + \dot V_m(t) \ge V_{th}\;and\;t-t_{last\_emit}\ge t_{refactor} \\
+        0,\quad otherwise
+    \end{cases} \label{eq:smm-lif-3}
+\end{align}
 
 %% Learning neuron, synapse models and the spike trainning method.
 %% try on real dataset.
 
 \subsection{Izhikevich Model}\index{Izhikevich Model}
 
-% \subsection{Introducción}\index{Introducción}
+\begin{align}
+    x(t) = \begin{bmatrix}V_m(t) & u(t) & t_{last\_emit}\end{bmatrix} \label{eq:smm-izhikevich-1} \\
+    \dot x(t) = \begin{bmatrix}\dot V_m(t) & \dot u(t)\end{bmatrix} \label{eq:smm-izhikevich-2} \\
+    \dot V_m(t) = 
+    \begin{cases}
+    V_{rest},  \quad V_m(t) + \dot V_m(t) \ge V_{th}\;and\;t-t_{last\_emit}\ge t_{refactor} \\
+    0.04V_m^2(t) + 5V_m(t) + 140 - u(t) + I(t), \quad otherwise
+    \end{cases}\label{eq:smm-izhikevich-3} \\
+    \dot u(t) = a(bV_m(t) - u(t))  \label{eq:smm-izhikevich-4} \\
+    \dot t_{last\_emit}(t) = \begin{cases}
+        t-t_{last\_emit}, \quad V_m(t) + \dot V_m(t) \ge V_{th}\;and\;t-t_{last\_emit}\ge t_{refactor} \\
+        0,\quad otherwise
+    \end{cases} \label{eq:smm-izhikevich-5}
+\end{align}
+
 
 \subsection{FitzHugh-Nagumo Model}\index{FitzHugh-Nagumo Model}
 
+\begin{align}
+    x(t) = \begin{bmatrix}V_m(t) & w(t)\end{bmatrix} \label{eq:smm-fn-1} \\
+    \dot x(t) = \begin{bmatrix}\dot V_m(t) & \dot w(t)\end{bmatrix} \label{eq:smm-fn-2} \\
+    \dot V_m(t) = V_m(t) - \frac{V_m^3(t)}{3} - w(t)- bw(t)\label{eq:smm-fn-3} \\
+    \dot w(t) = \frac{1}{\tau}(V_m(t) - a -bw(t))\label{eq:smm-fn-3}
+\end{align}
+
 \subsection{Morris-Lecar Model}\index{Morris-Lecar Model}
+\begin{align}
+    x(t) = \begin{bmatrix}V_m(t) & N(t)\end{bmatrix} \label{eq:smm-ml-1} \\
+    \dot x(t) = \begin{bmatrix}\dot V_m(t) & \dot N(t)\end{bmatrix} \label{eq:smm-ml-2} \\
+    \dot V_m(t) = \frac{1}{C}[I(t) - g_L(V_m(t) - V_L) - g_{Ca}M_{ss}(V_m(t) - V_{Ca})-g_KN(t)(V_m(t)-V_k)]\label{eq:smm-ml-3} \\
+    \dot N(t) = \frac{N_{ss} - N_(t)}{\tau_N}\label{eq:smm-ml-3}
+\end{align}
+In which,
+\begin{align}
+M_{ss} = \frac12\cdot (1+tanh[\frac{V_m(t)-V_1}{V_2}])
+N_{ss} = \frac12\cdot (1+tanh[\frac{V_m(t)-V_3}{V_4}])
+\tau_N = \frac{1}{\varphi cosh[\frac{V-V_3}{2V_4}]}
+\end{align}
 
 \subsection{Hindmarsh-Rose Model}\index{Hindmarsh-Rose Model}
+\begin{align}
+    x(t) = \begin{bmatrix} V_m(t) & y(t) & z(t) \end{bmatrix} \label{eq:smm-hr-1} \\
+    \dot x(t) = \begin{bmatrix} \dot V_m(t) & \dot y(t) & \dot z(t) \end{bmatrix} \label{eq:smm-hr-1} \\
+    \dot V_m(t) = y(t) + \phi(V_m(t)) - z(t) + I(t) \\
+    \dot y(t) = \_\psi(V_m(t)) - y(t) \\
+    \dot z(t) = r[s(V_m(t) - x_R)-z(t)] \\
+\end{align}
+In which,
+\begin{align}
+\phi(\_x(t)) = -a\_x^3(t) + b\_x^2(t) \\
+\psi(\_x(t)) = c - d\_x^2(t) \\
+\end{align}
 
 \subsection{Cable theory}\index{Cable theory}
+\begin{align}
+    x(t) = \begin{bmatrix} V_m(t)\end{bmatrix} \label{eq:smm-ct-1} \\
+    \dot x(t) = \begin{bmatrix} \dot V_m(t) \end{bmatrix} \label{eq:smm-ct-2} \\
+    \frac{dV_m(t,x)}{dt} = \frac{1}{\tau}[V_L - V_m + \lambda^2\frac{\partial^2 V_m(x)}{\partial x^2}] \label{eq:smm-ct-3} 
+\end{align}
+
 
 \subsection{Perfect Integrate-and-fire}\index{Perfect Integrate-and-fire}
+\begin{align}
+    x(t) = \begin{bmatrix}V_m(t) & t_{last\_emit}\end{bmatrix} \label{eq:smm-perfect-lif-1} \\
+    \dot x(t) = \begin{bmatrix}\dot V_m(t) & \dot t_{last\_emit}\end{bmatrix} \label{eq:smm-perfect-lif-2} \\
+    \dot V_m(t) = \begin{cases}
+        V_{rest}, \quad V_m(t) + \dot V_m(t) \ge V_{th}\;and\;t-t_{last\_emit}\ge t_{refactor}  \\
+        R_mI(t),\quad otherwise
+    \end{cases} \label{eq:smm-lif-3}\\
+    \dot t_{last\_emit}(t) = \begin{cases}
+        t-t_{last\_emit}, \quad V_m(t) + \dot V_m(t) \ge V_{th}\;and\;t-t_{last\_emit}\ge t_{refactor} \\
+        0,\quad otherwise
+    \end{cases} \label{eq:smm-lif-3}
+\end{align}
 
-\subsection{Adaptive Integrate-and-fire}\index{Adaptive Integrate-and-fire}
+\subsection{Adaptive Integrate-and-fire (AdEx)}\index{Adaptive Integrate-and-fire}
+\begin{align}
+    x(t) = \begin{bmatrix}V_m(t) & w(t)\end{bmatrix} \label{eq:smm-lif-1} \\
+    \dot x(t) = \begin{bmatrix}\dot V_m(t) & \dot w(t)\end{bmatrix} \label{eq:smm-lif-2} \\
+    \dot V_m(t) = -\frac{1}{C}(g_L(V_m(t) - E_L) + g_L\Delta_T exp(\frac{V_m(t) - V_T}{\Delta_T}) - w(t) + I(t)) \\
+    \dot w(t) = \frac{1}{\tau_w}(a(V_m(t) - E_L) - w(t))
+\end{align}
 
 \subsection{Fring Rate Model}\index{Firing Rate Model}
+\begin{align}
+    x(t) = \begin{bmatrix}r(t)\end{bmatrix} \label{eq:smm-lif-1} \\
+    \dot x(t) = \begin{bmatrix}\dot r(t)\end{bmatrix} \label{eq:smm-lif-2} \\
+\end{align}
+The firing rate model is a model based on spike emission phenomena. A firing vatiation model $r(t)$
+is utilized to describe the firing rate on time.
+A drawing function for generating spike with possibility $p(emit\_spike| t) = r(t)\Delta t$ 
+can be utilize to generate a spike train that meet the firing rate $r(t)$. 
 
 \subsection{Discussion}\index{Discussion (Neuron Dynamics)}
 
