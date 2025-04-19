@@ -47,6 +47,16 @@ Equation~\ref{eq:discrete-neuron-state-space-abstract-4}.
             (\exists i \in [0, |\bold y_t|])_i\bold y = V_{out_t} \label{eq:discrete-neuron-state-space-abstract-4}
 \end{align}
 
+In practice, we may utilize follow methods for discretizating the $\dot x$.
+\begin{itemize}
+    \item $\Delta x_t = f(u_t, x_t, t, P)\approx \frac{x_{t+1} - x_t}{\Delta t} \Rightarrow x_{t + 1} = f(u_t, x_t, t, P)\Delta t + x_t$
+    \item $\Delta x_t = f(u_t, x_t, t, P)\approx \frac{x_{t} - x_{t - 1}}{\Delta t} \Rightarrow x_{t} = f(u_t, x_t, t, P)\Delta t + x_{t-1}$
+    \item $\Delta x_t = f(u_t, x_t, t, P)\approx \frac{x_{t + 1} - x_{t - 1}}{\Delta t} \Rightarrow x_{t + 1} = 2\cdot f(u_t, x_t, t, P)\Delta t + x_{t - 1}$
+    \item $\Delta x_t = f(u_t, x_t, t, P)\approx \frac{-x_{t + 2} + 8x_{t + 1} - 8x_{t-1}+x_{t-2}}{12\Delta t} \Rightarrow x_{t + 2} = -12\cdot f(u_t, x_t, t, P)\Delta t + 8x_{t + 1} - 8x_{t-1} + x_{t-2}$
+    \item $\mathcal F(\dot x)=i\omega \mathcal F(x)\Rightarrow \hat x_k = \mathcal F[x_t],\hat x_{k}^{t+1}=\hat x_k^t +\Delta t\cdot g_k, g_k = \hat L_k\hat x_k^t +\mathcal F[N(x_t)], \frac{\partial x}{\partial t}=L(x) + N(x)$
+\end{itemize}
+
+
 
 \section{Neuron Model Examples}\index{Neuron Model Examples}
 \subsection{Hodgkin-Huxley (HH) Model}\index{Hodgkin-Huxley (HH) Model}
@@ -205,14 +215,14 @@ N_{ss} = \frac12\cdot (1+tanh[\frac{V_m(t)-V_3}{V_4}])
 \begin{align}
     x(t) = \begin{bmatrix} V_m(t) & y(t) & z(t) \end{bmatrix} \label{eq:smm-hr-1} \\
     \dot x(t) = \begin{bmatrix} \dot V_m(t) & \dot y(t) & \dot z(t) \end{bmatrix} \label{eq:smm-hr-1} \\
-    \dot V_m(t) = y(t) + \phi(V_m(t)) - z(t) + I(t) \\
-    \dot y(t) = \_\psi(V_m(t)) - y(t) \\
-    \dot z(t) = r[s(V_m(t) - x_R)-z(t)] \\
+    \dot V_m(t) = y(t) + \phi(x_2(t)) - z(t) + I(t) \\
+    \dot y(t) = \psi(x_2(t)) - y(t) \\
+    \dot z(t) = r[s(x_2(t) - x_R)-z(t)] \\
 \end{align}
 In which,
 \begin{align}
-\phi(\_x(t)) = -a\_x^3(t) + b\_x^2(t) \\
-\psi(\_x(t)) = c - d\_x^2(t) \\
+\phi(x(t)) = -ax_2^3(t) + b\_x^2(t) \\
+\psi(x(t)) = c - dx_2^2(t) \\
 \end{align}
 
 \subsection{Cable theory}\index{Cable theory}
